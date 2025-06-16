@@ -56,7 +56,6 @@ def callback(ch, method, properties, body):
 
         numbers = list(map(int, numbers_str))
 
-        # I will implement this function soon, Ben.
         expanded_list = expand_list(numbers)
 
         new_message = ','.join(map(str, expanded_list))
