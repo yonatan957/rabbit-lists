@@ -11,35 +11,42 @@ channel.exchange_declare(exchange='exercise_exchange', exchange_type='direct')
 channel.queue_bind(queue='input_queue', exchange='exercise_exchange', routing_key='input_queue')
 channel.queue_bind(queue='output_queue', exchange='exercise_exchange', routing_key='output_queue')
 
-last_added = 2
-def expand_list(list_of_nums):
-        """
-        Expands the input list of numbers up to length 12 by adding alternating 1s and 2s.
-        If the last number is 1,it adds 2 to the next list.
 
-        :param list_of_nums: (list of int) The original list of numbers.
+class StreamAdapter:
+        def __init__(self):
+                self.last_added = 2
+        def GetStreamChunks(self, list_of_nums):
+                """
+                Expands the input list of numbers up to length 12 by adding alternating 1s and 2s.
+                If the last number is 1,it adds 2 to the next list.
 
-        :returns: list of int: The extended list with length 12.
-        """
-        global last_added
+                :param list_of_nums: (list of int) The original list of numbers.
 
-        needed = 12 - len(list_of_nums)
+                :return: list[list[int]] - List of 12-length number chunks
+                """
 
-        if last_added == 1 and needed > 0:
-                list_of_nums.insert(0, 2)
-                needed -= 1
-                last_added = 2
+                chunks = [list_of_nums[i:i + 12] for i in range(0, len(list_of_nums), 12)]
 
-        if needed <= 0:
-                return list_of_nums
+                if chunks:
+                        last_chunk = chunks[-1]
+                        needed = 12 - len(last_chunk)
 
-        next_num = 1
-        for i in range(needed):
-                list_of_nums.append(next_num)
-                next_num = 1 if (next_num == 2) else 2
+                        if needed > 0:
+                                if self.last_added == 1:
+                                        last_chunk.insert(0, 2)
+                                        needed -= 1
+                                        self.last_added = 2
 
-        last_added = 1 if (next_num == 2) else 2
-        return list_of_nums
+                                next_num = 1
+                                for _ in range(needed):
+                                        last_chunk.append(next_num)
+                                        next_num = 1 if next_num == 2 else 2
+
+                                self.last_added = 1 if next_num == 2 else 2
+                                chunks[-1] = last_chunk
+
+                return chunks
+
 
 def callback(ch, method, properties, body):
         """
@@ -50,19 +57,24 @@ def callback(ch, method, properties, body):
         :param body: the content of the message
         :return: none
         """
+        stream_adapter = StreamAdapter()
+
         message_str = body.decode()
 
         numbers_str = message_str.split(',')
 
         numbers = list(map(int, numbers_str))
 
-        expanded_list = expand_list(numbers)
+        expanded_chunks = stream_adapter.GetStreamChunks(numbers)
 
-        new_message = ','.join(map(str, expanded_list))
+        for chunk in expanded_chunks:
+                message = ','.join(map(str, chunk))
 
-        channel.basic_publish(exchange='exercise_exchange',
-                              routing_key='output_queue',
-                              body=new_message)
+                channel.basic_publish(
+                        exchange='exercise_exchange',
+                        routing_key='output_queue',
+                        body=message
+                )
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
