@@ -1,8 +1,9 @@
+from typing import List
 class StreamAdapter:
     def __init__(self, chunk_size):
         self.last_added = 2
         self.chunk_size = chunk_size
-    def GetStreamChunks(self, list_of_nums):
+    def GetStreamChunks(self, list_of_nums: List[int]) -> List[List[int]]:
         """
         Expands the input list of numbers up to length 12 by adding alternating 1s and 2s.
         If the last number is 1,it adds 2 to the next list.

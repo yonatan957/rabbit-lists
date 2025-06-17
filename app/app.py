@@ -1,6 +1,7 @@
 import pika
 import os
 from app.stream_adapter import StreamAdapter
+from typing import List
 
 INPUT_QUEUE_NAME = os.getenv("INPUT_QUEUE_NAME", "input_queue")
 OUTPUT_QUEUE_NAME = os.getenv("OUTPUT_QUEUE_NAME", "output_queue")
