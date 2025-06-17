@@ -25,13 +25,13 @@ def make_call_back(channel_to_rabbit):
                 """
                 stream_adapter = StreamAdapter(CHUNK_SIZE)
 
-                message_str = body.decode()
+                message = body.decode()
 
-                numbers_str = message_str.split(',')
+                splitted_message = message.split(',')
 
-                numbers = list(map(int, numbers_str))
+                numbers_message = list(map(int, splitted_message))
 
-                expanded_chunks = stream_adapter.GetStreamChunks(numbers)
+                expanded_chunks = stream_adapter.GetStreamChunks(numbers_message)
 
                 for chunk in expanded_chunks:
                         message = ','.join(map(str, chunk))
