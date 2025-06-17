@@ -8,9 +8,9 @@ EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
 PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 
 def make_call_back(channel_to_rabbit):
-        def callback(ch, method, properties, body):
+        def handle_messages(ch, method, properties, body):
                 """
-                the callback for the input queue's cousume
+                the handle_messages for the input queue's cousume
                 :param ch: the chanel where the message came from
                 :param method: object with information about the message and her context
                 :param properties: object with extra info that the producer can add to the message like tags or id
@@ -37,7 +37,7 @@ def make_call_back(channel_to_rabbit):
                         )
 
                 ch.basic_ack(delivery_tag=method.delivery_tag)
-        return callback
+        return handle_messages
 
 if __name__ == '__main__':
         connection = pika.BlockingConnection(pika.ConnectionParameters(PIKA_HOST))
@@ -50,6 +50,6 @@ if __name__ == '__main__':
         channel.queue_bind(queue=INPUT_QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key=INPUT_QUEUE_NAME)
         channel.queue_bind(queue=OUTPUT_QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key=OUTPUT_QUEUE_NAME)
 
-        callback_fn = make_call_back(channel)
-        channel.basic_consume(queue=INPUT_QUEUE_NAME, on_message_callback=callback_fn)
+        handle_messages_fn = make_call_back(channel)
+        channel.basic_consume(queue=INPUT_QUEUE_NAME, on_message_callback=handle_messages_fn)
         channel.start_consuming()
