@@ -12,6 +12,14 @@ def test_stream_adapter(stream_adapter):
     result = stream_adapter.GetStreamChunks([1,2,3])
     assert result == [[1,2,3,1,2,1,2,1,2,1,2,1]]
 
+def test_small_list(stream_adapter):
+    result = stream_adapter.GetStreamChunks([4 for i in range(CHUNK_SIZE - 1)])
+    assert len(result) == 1
+    inner_list = result[0]
+    assert len(inner_list) == CHUNK_SIZE
+    assert all(x == 4 for x in inner_list[:-1])
+    assert inner_list[-1] == 1
+
 def test_stream_adapter_start_with_2(stream_adapter):
     stream_adapter.last_added = 1
     result = stream_adapter.GetStreamChunks([1,2,3])

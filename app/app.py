@@ -10,7 +10,7 @@ PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 CHUNK_SIZE = os.getenv("CHUNK_SIZE", 12)
 
 def decode_message_to_numbers(message: bytes) -> List[int]:
-        message = body.decode()
+        message = message.decode()
 
         splitted_message = message.split(',')
 
