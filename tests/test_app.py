@@ -15,7 +15,8 @@ def test_stream_adapter_start_with_2():
 def test_stream_adapter_multy_lists():
     sa = StreamAdapter()
     sa.last_added = 2
-    result = sa.GetStreamChunks([4 for i in range(23)])
+    result = sa.GetStreamChunks([5 for i in range(23)])
+    assert result[0] == [6 for i in range(12)]
     assert len(result) == 2
     assert result[1][-1] == 1
 
