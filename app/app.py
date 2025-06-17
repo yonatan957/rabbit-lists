@@ -7,7 +7,7 @@ INPUT_QUEUE_NAME = os.getenv("INPUT_QUEUE_NAME", "input_queue")
 OUTPUT_QUEUE_NAME = os.getenv("OUTPUT_QUEUE_NAME", "output_queue")
 EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
 PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
-CHUNK_SIZE = os.getenv("CHUNK_SIZE", 12)
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 12))
 
 def decode_message_to_numbers(message: bytes) -> List[int]:
         message = message.decode()
