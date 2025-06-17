@@ -1,2 +1,17 @@
-.idea
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
 .env
+.venv/
+*.sqlite3
+*.log
+.DS_Store
+.idea/
+.vscode/
