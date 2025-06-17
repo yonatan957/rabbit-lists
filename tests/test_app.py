@@ -1,4 +1,5 @@
-from app.app import StreamAdapter, make_call_back, EXCHANGE_NAME, OUTPUT_QUEUE_NAME
+from app.app import make_call_back, EXCHANGE_NAME, OUTPUT_QUEUE_NAME
+from app.stream_adapter import StreamAdapter
 from unittest.mock import Mock
 
 def test_stream_adapter():
