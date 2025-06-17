@@ -9,6 +9,15 @@ EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
 PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 CHUNK_SIZE = os.getenv("CHUNK_SIZE", 12)
 
+def decode_message_to_numbers(message: bytes) -> List[int]:
+        message = body.decode()
+
+        splitted_message = message.split(',')
+
+        numbers_message = list(map(int, splitted_message))
+
+        return numbers_message
+
 def make_call_back(channel_to_rabbit):
         def handle_messages(
                 ch: pika.channel.Channel,
@@ -25,13 +34,9 @@ def make_call_back(channel_to_rabbit):
                 """
                 stream_adapter = StreamAdapter(CHUNK_SIZE)
 
-                message = body.decode()
+                decoded_message = decode_message_to_numbers(body)
 
-                splitted_message = message.split(',')
-
-                numbers_message = list(map(int, splitted_message))
-
-                expanded_chunks = stream_adapter.GetStreamChunks(numbers_message)
+                expanded_chunks = stream_adapter.GetStreamChunks(decoded_message)
 
                 for chunk in expanded_chunks:
                         message = ','.join(map(str, chunk))
