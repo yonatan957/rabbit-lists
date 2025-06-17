@@ -1,56 +1,28 @@
 import pika
 import os
+from app.stream_adapter import StreamAdapter
+from typing import List
 
 INPUT_QUEUE_NAME = os.getenv("INPUT_QUEUE_NAME", "input_queue")
 OUTPUT_QUEUE_NAME = os.getenv("OUTPUT_QUEUE_NAME", "output_queue")
 EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
-
-class StreamAdapter:
-        def __init__(self):
-                self.last_added = 2
-        def GetStreamChunks(self, list_of_nums):
-                """
-                Expands the input list of numbers up to length 12 by adding alternating 1s and 2s.
-                If the last number is 1,it adds 2 to the next list.
-
-                :param list_of_nums: (list of int) The original list of numbers.
-
-                :return: list[list[int]] - List of 12-length number chunks
-                """
-
-                chunks = [list_of_nums[i:i + 12] for i in range(0, len(list_of_nums), 12)]
-
-                if chunks:
-                        last_chunk = chunks[-1]
-                        needed = 12 - len(last_chunk)
-
-                        if needed > 0:
-                                if self.last_added == 1:
-                                        last_chunk.insert(0, 2)
-                                        needed -= 1
-                                        self.last_added = 2
-
-                                next_num = 1
-                                for _ in range(needed):
-                                        last_chunk.append(next_num)
-                                        next_num = 1 if next_num == 2 else 2
-
-                                self.last_added = 1 if next_num == 2 else 2
-                                chunks[-1] = last_chunk
-
-                return chunks
+PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 
 def make_call_back(channel_to_rabbit):
-        def callback(ch, method, properties, body):
+        def handle_messages(
+                ch: pika.channel.Channel,
+                method: pika.spec.Basic.Deliver,
+                properties: pika.spec.BasicProperties,
+                body: bytes) ->  None:
                 """
-                the callback for the input queue's cousume
+                the handle_messages for the input queue's cousume
                 :param ch: the chanel where the message came from
                 :param method: object with information about the message and her context
                 :param properties: object with extra info that the producer can add to the message like tags or id
                 :param body: the content of the message
                 :return: none
                 """
-                stream_adapter = StreamAdapter()
+                stream_adapter = StreamAdapter(12)
 
                 message_str = body.decode()
 
@@ -70,10 +42,10 @@ def make_call_back(channel_to_rabbit):
                         )
 
                 ch.basic_ack(delivery_tag=method.delivery_tag)
-        return callback
+        return handle_messages
 
 if __name__ == '__main__':
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(PIKA_HOST))
         channel = connection.channel()
 
         channel.queue_declare(queue=INPUT_QUEUE_NAME)
@@ -83,6 +55,6 @@ if __name__ == '__main__':
         channel.queue_bind(queue=INPUT_QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key=INPUT_QUEUE_NAME)
         channel.queue_bind(queue=OUTPUT_QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key=OUTPUT_QUEUE_NAME)
 
-        callback_fn = make_call_back(channel)
-        channel.basic_consume(queue=INPUT_QUEUE_NAME, on_message_callback=callback_fn)
+        handle_messages_fn = make_call_back(channel)
+        channel.basic_consume(queue=INPUT_QUEUE_NAME, on_message_callback=handle_messages_fn)
         channel.start_consuming()
