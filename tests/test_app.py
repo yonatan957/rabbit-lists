@@ -2,19 +2,20 @@ from app.app import make_call_back, EXCHANGE_NAME, OUTPUT_QUEUE_NAME
 from app.stream_adapter import StreamAdapter
 from unittest.mock import Mock
 
+chunk_size = 12
 def test_stream_adapter():
-    sa = StreamAdapter()
+    sa = StreamAdapter(chunk_size)
     result = sa.GetStreamChunks([1,2,3])
     assert result == [[1,2,3,1,2,1,2,1,2,1,2,1]]
 
 def test_stream_adapter_start_with_2():
-    sa = StreamAdapter()
+    sa = StreamAdapter(chunk_size)
     sa.last_added = 1
     result = sa.GetStreamChunks([1,2,3])
     assert result == [[2,1,2,3,1,2,1,2,1,2,1,2]]
 
 def test_stream_adapter_multy_lists():
-    sa = StreamAdapter()
+    sa = StreamAdapter(chunk_size)
     sa.last_added = 2
     result = sa.GetStreamChunks([5 for i in range(23)])
     assert result[0] == [6 for i in range(12)]
@@ -22,7 +23,7 @@ def test_stream_adapter_multy_lists():
     assert result[1][-1] == 1
 
 def test_stream_adapter_multy_lists_start_with_2():
-    sa = StreamAdapter()
+    sa = StreamAdapter(chunk_size)
     sa.last_added = 1
     result = sa.GetStreamChunks([4 for i in range(23)])
     assert len(result) == 2

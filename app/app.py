@@ -17,7 +17,7 @@ def make_call_back(channel_to_rabbit):
                 :param body: the content of the message
                 :return: none
                 """
-                stream_adapter = StreamAdapter()
+                stream_adapter = StreamAdapter(12)
 
                 message_str = body.decode()
 

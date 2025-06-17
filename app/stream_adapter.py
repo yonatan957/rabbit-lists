@@ -1,7 +1,7 @@
 class StreamAdapter:
-    def __init__(self):
+    def __init__(self, chunk_size):
         self.last_added = 2
-
+        self.chunk_size = chunk_size
     def GetStreamChunks(self, list_of_nums):
         """
         Expands the input list of numbers up to length 12 by adding alternating 1s and 2s.
@@ -19,11 +19,11 @@ class StreamAdapter:
             else:
                 i += 1
 
-        chunks = [list_of_nums[i:i + 12] for i in range(0, len(list_of_nums), 12)]
+        chunks = [list_of_nums[i:i + 12] for i in range(0, len(list_of_nums), self.chunk_size)]
 
         if chunks:
             last_chunk = chunks[-1]
-            needed = 12 - len(last_chunk)
+            needed = self.chunk_size - len(last_chunk)
 
             if needed > 0:
                 if self.last_added == 1:
