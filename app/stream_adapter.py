@@ -1,6 +1,6 @@
 from typing import List
 class StreamAdapter:
-    def __init__(self, chunk_size):
+    def __init__(self, chunk_size:int):
         self.last_added = 2
         self.chunk_size = chunk_size
 
