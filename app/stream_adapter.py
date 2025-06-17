@@ -3,8 +3,8 @@ class StreamAdapter:
     def __init__(
             self,
             chunk_size:int,
-            search_list: Optional[List[int]],
-            replace_list: Optional[List[int]]):
+            search_list: Optional[List[int]] = None,
+            replace_list: Optional[List[int]] = None):
         self.last_added = 2
         self.chunk_size = chunk_size
         self.search_list = search_list if search_list is not None else [5,5,5]
@@ -20,7 +20,7 @@ class StreamAdapter:
 
 
 
-    def convert_5_sequences(self, message: List[int]) -> List[int]:
+    def convert_sequences(self, message: List[int]) -> List[int]:
         i = 0
         while i <= len(message) - 3:
             triplet = message[i:i + 3]
@@ -62,7 +62,7 @@ class StreamAdapter:
         :return: list[list[int]] - List of 12-length number chunks
         """
 
-        message = self.convert_5_sequences(numbers_to_chunk)
+        message = self.convert_sequences(numbers_to_chunk)
 
         chunks = []
         for i in range(0, len(message), self.chunk_size):
