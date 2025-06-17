@@ -9,7 +9,11 @@ EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
 PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 
 def make_call_back(channel_to_rabbit):
-        def handle_messages(ch, method, properties, body):
+        def handle_messages(
+                ch: pika.channel.Channel,
+                method: pika.spec.Basic.Deliver,
+                properties: pika.spec.BasicProperties,
+                body: bytes) ->  None:
                 """
                 the handle_messages for the input queue's cousume
                 :param ch: the chanel where the message came from
