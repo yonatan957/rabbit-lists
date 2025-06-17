@@ -17,6 +17,13 @@ class StreamAdapter:
 
                 :return: list[list[int]] - List of 12-length number chunks
                 """
+                i = 0
+                while i < len(list_of_nums) - 2:
+                        if list_of_nums[i] == list_of_nums[i + 1] == list_of_nums[i + 2] == 5:
+                                list_of_nums[i] = list_of_nums[i + 1] = list_of_nums[i + 2] = 6
+                                i += 3
+                        else:
+                                i += 1
 
                 chunks = [list_of_nums[i:i + 12] for i in range(0, len(list_of_nums), 12)]
 
