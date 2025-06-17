@@ -5,6 +5,7 @@ from app.stream_adapter import StreamAdapter
 INPUT_QUEUE_NAME = os.getenv("INPUT_QUEUE_NAME", "input_queue")
 OUTPUT_QUEUE_NAME = os.getenv("OUTPUT_QUEUE_NAME", "output_queue")
 EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
+PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
 
 def make_call_back(channel_to_rabbit):
         def callback(ch, method, properties, body):
@@ -39,7 +40,7 @@ def make_call_back(channel_to_rabbit):
         return callback
 
 if __name__ == '__main__':
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(PIKA_HOST))
         channel = connection.channel()
 
         channel.queue_declare(queue=INPUT_QUEUE_NAME)
