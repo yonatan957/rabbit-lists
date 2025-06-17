@@ -6,6 +6,26 @@ def test_stream_adapter():
     result = sa.GetStreamChunks([1,2,3])
     assert result == [[1,2,3,1,2,1,2,1,2,1,2,1]]
 
+def test_stream_adapter_start_with_2():
+    sa = StreamAdapter()
+    sa.last_added = 1
+    result = sa.GetStreamChunks([1,2,3])
+    assert result == [[2,1,2,3,1,2,1,2,1,2,1,2]]
+
+def test_stream_adapter_multy_lists():
+    sa = StreamAdapter()
+    sa.last_added = 2
+    result = sa.GetStreamChunks([4 for i in range(23)])
+    assert len(result) == 2
+    assert result[1][-1] == 1
+
+def test_stream_adapter_multy_lists_start_with_2():
+    sa = StreamAdapter()
+    sa.last_added = 1
+    result = sa.GetStreamChunks([4 for i in range(23)])
+    assert len(result) == 2
+    assert result[1][0] == 2
+
 def test_callback():
     fake_channel = Mock()
     callback = make_call_back(fake_channel)
