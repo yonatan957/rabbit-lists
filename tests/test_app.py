@@ -1,13 +1,12 @@
-from app.app import make_call_back, EXCHANGE_NAME, OUTPUT_QUEUE_NAME
+from app.app import make_call_back, EXCHANGE_NAME, OUTPUT_QUEUE_NAME, CHUNK_SIZE
 from app.stream_adapter import StreamAdapter
 from unittest.mock import Mock
 import pytest
 
-chunk_size = 12
 
 @pytest.fixture
 def stream_adapter():
-        return StreamAdapter(chunk_size)
+        return StreamAdapter(CHUNK_SIZE)
 
 def test_stream_adapter(stream_adapter):
     result = stream_adapter.GetStreamChunks([1,2,3])

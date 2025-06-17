@@ -7,6 +7,7 @@ INPUT_QUEUE_NAME = os.getenv("INPUT_QUEUE_NAME", "input_queue")
 OUTPUT_QUEUE_NAME = os.getenv("OUTPUT_QUEUE_NAME", "output_queue")
 EXCHANGE_NAME = os.getenv("EXCHANGE_NAME", "exercise_exchange")
 PIKA_HOST = os.getenv("PIKA_HOST", 'localhost')
+CHUNK_SIZE = os.getenv("CHUNK_SIZE", 12)
 
 def make_call_back(channel_to_rabbit):
         def handle_messages(
@@ -22,7 +23,7 @@ def make_call_back(channel_to_rabbit):
                 :param body: the content of the message
                 :return: none
                 """
-                stream_adapter = StreamAdapter(12)
+                stream_adapter = StreamAdapter(CHUNK_SIZE)
 
                 message_str = body.decode()
 
